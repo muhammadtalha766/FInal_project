@@ -27,11 +27,18 @@ RUN git clone https://github.com/muhammadtalha766/Test_mern_app.git .
 
 # Install npm packages
 RUN npm install 
-RUN cd frontend 
-RUN npm install 
-RUN npm run build
-RUN cd .. 
+
+# Install npm packages in frontend
+WORKDIR /opt/app/frontend
+RUN npm install
+
+# Remove the build command if not needed
+# RUN npm run build
+
+# Continue with the rest of your Dockerfile
+WORKDIR /opt/app
 RUN npm run server
+
 
 # Expose MongoDB and Nginx ports
 EXPOSE 27017
