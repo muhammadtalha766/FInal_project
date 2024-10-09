@@ -1,33 +1,42 @@
-# Use Ubuntu as the base image
-FROM ubuntu
+# Use Ubuntu as base image
+FROM ubuntu:latest
 
-# Update package list and install dependencies (curl, git, gnupg)
-RUN apt-get update && apt-get install -y curl git gnupg
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y git nginx curl gnupg lsb-release && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install Nginx
-RUN apt-get install -y nginx
+# Install Node.js and npm using Nodesource
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
+# Install MongoDB
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+    gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg && \
+    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/8.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list && \
+    apt-get update && \
+    apt-get install -y mongodb-org && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set working directory
 WORKDIR /opt/app
 
-# Copy the entire project into the container
-COPY . .
+# Clone your repository
+RUN git clone https://github.com/muhammadtalha766/Test_mern_app.git .
 
-# Install Node.js (v20) directly from NodeSource
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
-
-# Install MongoDB dependencies and MongoDB
-RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor && \
-    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list && \
-    apt-get update && \
-    apt-get install -y mongodb-org
-
-# Change to frontend directory and install npm packages
-WORKDIR /opt/app/frontend
-RUN npm install
+# Install npm packages
+RUN npm install 
+RUN cd frontend 
+RUN npm install 
 RUN npm run build
+RUN cd .. 
+RUN npm run server
 
-# Start MongoDB and Nginx in the foreground
-CMD ["bash", "-c", "mongod --bind_ip 0.0.0.0 --fork --logpath /var/log/mongodb.log --dbpath /data/db && nginx -g 'daemon off;'"]
+# Expose MongoDB and Nginx ports
+EXPOSE 27017
+EXPOSE 80
+
+# Start MongoDB and Nginx
+CMD ["bash", "-c", "mongod --fork --logpath /var/log/mongodb.log && nginx -g 'daemon off;'"]
 
