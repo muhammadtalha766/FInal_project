@@ -23,7 +23,7 @@ RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
 WORKDIR /opt/app
 
 # Clone your repository
-RUN git clone https://github.com/muhammadtalha766/Test_mern_app.git .
+ADD https://github.com/muhammadtalha766/Test_mern_app.git .
 
 # Install npm packages
 RUN npm install 
@@ -32,16 +32,17 @@ RUN npm install
 WORKDIR /opt/app/frontend
 RUN npm install
 
-# Remove the build command if not needed
+# Build the frontend
 RUN npm run build
 
-# Continue with the rest of your Dockerfile
+# Set back to main working directory
 WORKDIR /opt/app
 
-# Expose MongoDB and Nginx ports
+# Expose MongoDB and Node.js ports
 EXPOSE 27017
-EXPOSE 80
+EXPOSE 5000
 
-# Start MongoDB and Nginx
-CMD ["bash", "-c", "mongod --fork --logpath /var/log/mongodb.log &&, npm run server "]
+# Create data directories for MongoDB
+RUN mkdir -p /data/db && chown -R mongodb:mongodb /data/db
 
+CMD ["sh", "-c", "mongod --bind_ip_all --dbpath /data/db --logpath /var/log/mongodb.log --fork && npm run server"]
