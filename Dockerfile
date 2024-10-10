@@ -23,7 +23,8 @@ RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
 WORKDIR /opt/app
 
 # Clone your repository
-ADD https://github.com/muhammadtalha766/Test_mern_app.git .
+#ADD https://github.com/muhammadtalha766/Test_mern_app.git .
+ADD https://github.com/muhammadtalha766/FInal_project.git .
 
 # Install npm packages
 RUN npm install 
