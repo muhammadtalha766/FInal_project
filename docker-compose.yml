@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  mern_app: 
+    build:
+      context: .
+      dockerfile: Dockerfile
+      no_cache: true
+    image: mern_app_image  
+    ports:
+      - "5000:5000"  
+    hostname: talha 
+    container_name: my-app_container
