@@ -33,17 +33,15 @@ WORKDIR /opt/app/frontend
 RUN npm install
 
 # Remove the build command if not needed
-# RUN npm run build
+RUN npm run build
 
 # Continue with the rest of your Dockerfile
 WORKDIR /opt/app
-RUN npm run server
-
 
 # Expose MongoDB and Nginx ports
 EXPOSE 27017
 EXPOSE 80
 
 # Start MongoDB and Nginx
-CMD ["bash", "-c", "mongod --fork --logpath /var/log/mongodb.log && nginx -g 'daemon off;'"]
+CMD ["bash", "-c", "mongod --fork --logpath /var/log/mongodb.log &&, npm run server "]
 
