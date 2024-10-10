@@ -3,7 +3,7 @@ FROM ubuntu:latest
 
 # Install required packages
 RUN apt-get update && \
-    apt-get install -y git nginx curl gnupg lsb-release && \
+    apt-get install -y curl gnupg lsb-release && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Node.js and npm using Nodesource
